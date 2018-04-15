@@ -228,11 +228,15 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     private func updateAvatarView(from viewModel: MessageViewModelProtocol,
                                   with style: BaseMessageCollectionViewCellStyleProtocol) {
         self.avatarView.isHidden = !viewModel.decorationAttributes.isShowingAvatar
-
-        let avatarImageSize = style.avatarSize(viewModel: viewModel)
+        
+        let avatarImageSize = _avatarSize(viewModel, style: style)
         if avatarImageSize != .zero {
             self.avatarView.image = viewModel.avatarImage.value
         }
+    }
+    
+    private func _avatarSize(_ viewModel: MessageViewModelProtocol, style: BaseMessageCollectionViewCellStyleProtocol) -> CGSize {
+        return viewModel.decorationAttributes.isShowingAvatar ? style.avatarSize(viewModel: viewModel) : CGSize.zero
     }
 
     // MARK: layout
@@ -280,7 +284,7 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
             isIncoming: self.messageViewModel.isIncoming,
             isShowingFailedButton: self.shouldShowFailedIcon,
             failedButtonSize: self.baseStyle.failedIcon.size,
-            avatarSize: self.baseStyle.avatarSize(viewModel: self.messageViewModel),
+            avatarSize: _avatarSize(self.messageViewModel, style: self.baseStyle),
             avatarVerticalAlignment: self.baseStyle.avatarVerticalAlignment(viewModel: self.messageViewModel),
             isShowingSelectionIndicator: self.messageViewModel.decorationAttributes.isShowingSelectionIndicator,
             selectionIndicatorSize: self.baseStyle.selectionIndicatorIcon(for: self.messageViewModel).size,
