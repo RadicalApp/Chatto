@@ -29,6 +29,7 @@ public enum MessageStatus {
     case failed
     case sending
     case success
+    case read
 }
 
 public protocol MessageModelProtocol: ChatItemProtocol {

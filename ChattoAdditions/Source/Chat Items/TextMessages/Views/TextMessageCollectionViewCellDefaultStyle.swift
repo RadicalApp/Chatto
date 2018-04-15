@@ -130,14 +130,16 @@ open class TextMessageCollectionViewCellDefaultStyle: TextMessageCollectionViewC
         switch status {
         case .success:
             break
+        case .read:
+            color = color.bma_blendWithColor(UIColor.black.withAlphaComponent(0.10))
+            break
         case .failed, .sending:
             color = color.bma_blendWithColor(UIColor.white.withAlphaComponent(0.70))
         }
-
+        
         if isSelected {
-            color = color.bma_blendWithColor(UIColor.black.withAlphaComponent(0.10))
+            color = color.bma_blendWithColor(UIColor.black.withAlphaComponent(0.20))
         }
-
         return image.bma_tintWithColor(color)
     }
 

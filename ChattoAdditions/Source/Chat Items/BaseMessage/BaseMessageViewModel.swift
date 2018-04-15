@@ -28,6 +28,7 @@ public enum MessageViewModelStatus {
     case success
     case sending
     case failed
+    case read
 }
 
 public extension MessageStatus {
@@ -39,6 +40,8 @@ public extension MessageStatus {
             return MessageViewModelStatus.failed
         case .sending:
             return MessageViewModelStatus.sending
+        case .read:
+            return MessageViewModelStatus.read
         }
     }
 }
