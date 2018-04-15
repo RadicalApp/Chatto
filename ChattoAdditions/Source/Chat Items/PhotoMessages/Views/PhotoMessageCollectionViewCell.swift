@@ -28,7 +28,7 @@ public typealias PhotoMessageCollectionViewCellStyleProtocol = PhotoBubbleViewSt
 
 public final class PhotoMessageCollectionViewCell: BaseMessageCollectionViewCell<PhotoBubbleView> {
 
-    static func sizingCell() -> PhotoMessageCollectionViewCell {
+    public static func sizingCell() -> PhotoMessageCollectionViewCell {
         let cell = PhotoMessageCollectionViewCell(frame: CGRect.zero)
         cell.viewContext = .sizing
         return cell
@@ -44,7 +44,7 @@ public final class PhotoMessageCollectionViewCell: BaseMessageCollectionViewCell
         }
     }
 
-    var photoMessageViewModel: PhotoMessageViewModelProtocol! {
+    public var photoMessageViewModel: PhotoMessageViewModelProtocol! {
         didSet {
             self.messageViewModel = self.photoMessageViewModel
             self.bubbleView.photoMessageViewModel = self.photoMessageViewModel
