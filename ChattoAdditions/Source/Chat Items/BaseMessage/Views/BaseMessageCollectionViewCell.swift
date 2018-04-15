@@ -25,6 +25,11 @@
 import UIKit
 import Chatto
 
+
+public struct UIResponderCustomEditActions {
+    public static let delete = Selector(("deleteMessage"))
+}
+
 public protocol BaseMessageCollectionViewCellStyleProtocol {
     func avatarSize(viewModel: MessageViewModelProtocol) -> CGSize // .zero => no avatar
     func avatarVerticalAlignment(viewModel: MessageViewModelProtocol) -> VerticalAlignment
@@ -406,6 +411,19 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
             break
         }
     }
+    
+    public var onDeleteTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
+    @objc
+    func deleteMessage() {
+        self.onDeleteTapped?(self)
+    }
+    
+    open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        //let selector = #selector(UIResponderStandardEditActions.copy(_:))
+        let deleteSelector = UIResponderCustomEditActions.delete
+        return action == deleteSelector
+    }
+    
 }
 
 fileprivate struct Layout {

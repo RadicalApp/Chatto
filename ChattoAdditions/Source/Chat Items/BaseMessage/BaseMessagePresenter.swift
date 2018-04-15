@@ -37,6 +37,7 @@ public protocol BaseMessageInteractionHandlerProtocol {
     func userDidTapOnFailIcon(viewModel: ViewModelT, failIconView: UIView)
     func userDidTapOnAvatar(viewModel: ViewModelT)
     func userDidTapOnBubble(viewModel: ViewModelT)
+    func userDidTapOnDelete(viewModel: ViewModelT)
     func userDidBeginLongPressOnBubble(viewModel: ViewModelT)
     func userDidEndLongPressOnBubble(viewModel: ViewModelT)
     func userDidSelectMessage(viewModel: ViewModelT)
@@ -66,6 +67,12 @@ open class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHandl
             self.viewModelBuilder = viewModelBuilder
             self.cellStyle = cellStyle
             self.interactionHandler = interactionHandler
+        
+        let deleteItem = UIMenuItem(
+            title: "Delete",
+            action: UIResponderCustomEditActions.delete
+        )
+        UIMenuController.shared.menuItems = [deleteItem]
     }
 
     public let messageModel: ModelT
@@ -114,6 +121,10 @@ open class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHandl
             cell.onBubbleLongPressBegan = { [weak self] (cell) in
                 guard let sSelf = self else { return }
                 sSelf.onCellBubbleLongPressBegan()
+            }
+            cell.onDeleteTapped = { [weak self] (cell) in
+                guard let sSelf = self else { return }
+                sSelf.onCellDeleteTapped()
             }
             cell.onBubbleLongPressEnded = { [weak self] (cell) in
                 guard let sSelf = self else { return }
@@ -185,6 +196,10 @@ open class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHandl
         return false
     }
 
+    open func onCellDeleteTapped() {
+        self.interactionHandler?.userDidTapOnDelete(viewModel: self.messageViewModel)
+    }
+    
     open func onCellBubbleTapped() {
         self.interactionHandler?.userDidTapOnBubble(viewModel: self.messageViewModel)
     }
