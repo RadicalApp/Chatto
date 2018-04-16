@@ -419,9 +419,8 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     }
     
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        let selector = #selector(UIResponderStandardEditActions.copy(_:))
         let deleteSelector = UIResponderCustomEditActions.delete
-        return action == selector || action == deleteSelector
+        return action == deleteSelector
     }
     
 }

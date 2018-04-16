@@ -67,12 +67,6 @@ open class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHandl
             self.viewModelBuilder = viewModelBuilder
             self.cellStyle = cellStyle
             self.interactionHandler = interactionHandler
-        
-        let deleteItem = UIMenuItem(
-            title: "Delete",
-            action: UIResponderCustomEditActions.delete
-        )
-        UIMenuController.shared.menuItems = [deleteItem]
     }
 
     public let messageModel: ModelT
