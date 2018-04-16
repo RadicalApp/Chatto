@@ -27,6 +27,7 @@ import UIKit
 public protocol PhotoMessageModelProtocol: DecoratedMessageModelProtocol {
     var image: UIImage { get }
     var imageSize: CGSize { get }
+    var imageURL: String? { get }
 }
 
 open class PhotoMessageModel<MessageModelT: MessageModelProtocol>: PhotoMessageModelProtocol {
@@ -36,9 +37,11 @@ open class PhotoMessageModel<MessageModelT: MessageModelProtocol>: PhotoMessageM
     public let _messageModel: MessageModelT // Can't make messasgeModel: MessageModelT: https://gist.github.com/diegosanchezr/5a66c7af862e1117b556
     public let image: UIImage
     public let imageSize: CGSize
-    public init(messageModel: MessageModelT, imageSize: CGSize, image: UIImage) {
+    public var imageURL: String?
+    public init(messageModel: MessageModelT, imageSize: CGSize, image: UIImage, imageURL: String?) {
         self._messageModel = messageModel
         self.imageSize = imageSize
         self.image = image
+        self.imageURL = imageURL
     }
 }
