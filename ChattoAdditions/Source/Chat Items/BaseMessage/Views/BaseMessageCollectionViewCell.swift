@@ -255,6 +255,9 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         self.bubbleView.layoutIfNeeded()
 
         self.avatarView.bma_rect = layout.avatarViewFrame
+        self.avatarView.layer.cornerRadius = self.avatarView.frame.size.width / 2
+        self.avatarView.clipsToBounds = true
+        
         self.selectionIndicator.bma_rect = layout.selectionIndicatorFrame
 
         if self.accessoryTimestampView.superview != nil {
@@ -406,6 +409,7 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         case .began:
             self.onBubbleLongPressBegan?(self)
         case .ended, .cancelled:
+            print("Longg presses cancelled")
             self.onBubbleLongPressEnded?(self)
         default:
             break
@@ -422,6 +426,27 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         let deleteSelector = UIResponderCustomEditActions.delete
         return action == deleteSelector
     }
+    
+    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        print("Touches Began")
+    }
+    
+    open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        print("Touches Ended")
+    }
+    
+    open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        print("Touches Cancelled")
+    }
+    
+    open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
+        print("Touches Moved")
+    }
+    
     
 }
 

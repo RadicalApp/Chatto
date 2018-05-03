@@ -74,7 +74,7 @@ open class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHandl
     public let viewModelBuilder: ViewModelBuilderT
     public let interactionHandler: InteractionHandlerT?
     public let cellStyle: BaseMessageCollectionViewCellStyleProtocol
-
+    
     public private(set) final lazy var messageViewModel: ViewModelT = {
         return self.createViewModel()
     }()
@@ -155,6 +155,7 @@ open class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHandl
 
     open override func cellWillBeShown() {
         self.messageViewModel.willBeShown()
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "cellWillBeShown"), object: messageModel)
     }
 
     open override func cellWasHidden() {

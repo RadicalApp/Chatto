@@ -212,6 +212,26 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
     public var canCalculateSizeInBackground: Bool {
         return true
     }
+    
+    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+    }
+    
+    open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        print("Touches Ended")
+    }
+    
+    open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        print("Touches Cancelled")
+    }
+    
+    open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
+        print("Touches Moved")
+    }
+    
 }
 
 private final class TextBubbleLayoutModel {

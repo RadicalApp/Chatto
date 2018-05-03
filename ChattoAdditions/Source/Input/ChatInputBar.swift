@@ -61,6 +61,7 @@ open class ChatInputBar: ReusableXibView {
     class open func loadNib() -> ChatInputBar {
         let view = Bundle(for: self).loadNibNamed(self.nibName(), owner: nil, options: nil)!.first as! ChatInputBar
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
         view.frame = CGRect.zero
         return view
     }
@@ -227,6 +228,9 @@ extension ChatInputBar {
         appearance.sendButtonAppearance.titleColors.forEach { (state, color) in
             self.sendButton.setTitleColor(color, for: state.controlState)
         }
+        self.sendButton.backgroundColor = appearance.sendButtonAppearance.backgroundColor
+        self.textView.backgroundColor = appearance.textInputAppearance.backgroundColor
+        self.scrollView.backgroundColor = appearance.textInputAppearance.backgroundColor
         self.sendButton.titleLabel?.font = appearance.sendButtonAppearance.font
         self.tabBarContainerHeightConstraint.constant = appearance.tabBarAppearance.height
     }
