@@ -38,6 +38,8 @@ public protocol BaseMessageInteractionHandlerProtocol {
     func userDidTapOnAvatar(viewModel: ViewModelT)
     func userDidTapOnBubble(viewModel: ViewModelT)
     func userDidTapOnDelete(viewModel: ViewModelT)
+    func userDidTapOnWhereIsMyMessage(viewModel: ViewModelT)
+    func userDidTapOnHide(viewModel: ViewModelT)
     func userDidBeginLongPressOnBubble(viewModel: ViewModelT)
     func userDidEndLongPressOnBubble(viewModel: ViewModelT)
     func userDidSelectMessage(viewModel: ViewModelT)
@@ -120,6 +122,14 @@ open class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHandl
                 guard let sSelf = self else { return }
                 sSelf.onCellDeleteTapped()
             }
+            cell.onWhereIsMyMessageTapped = { [weak self] (cell) in
+                guard let sSelf = self else { return }
+                sSelf.onCellWhereIsMyMessageTapped()
+            }
+            cell.onHideTapped = { [weak self] (cell) in
+                guard let sSelf = self else { return }
+                sSelf.onCellHideTapped()
+            }
             cell.onBubbleLongPressEnded = { [weak self] (cell) in
                 guard let sSelf = self else { return }
                 sSelf.onCellBubbleLongPressEnded()
@@ -193,6 +203,14 @@ open class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHandl
 
     open func onCellDeleteTapped() {
         self.interactionHandler?.userDidTapOnDelete(viewModel: self.messageViewModel)
+    }
+    
+    open func onCellWhereIsMyMessageTapped() {
+        self.interactionHandler?.userDidTapOnWhereIsMyMessage(viewModel: self.messageViewModel)
+    }
+    
+    open func onCellHideTapped() {
+        self.interactionHandler?.userDidTapOnHide(viewModel: self.messageViewModel)
     }
     
     open func onCellBubbleTapped() {

@@ -109,12 +109,12 @@ open class TextMessageCollectionViewCellDefaultStyle: TextMessageCollectionViewC
     open func bubbleImage(viewModel: TextMessageViewModelProtocol, isSelected: Bool) -> UIImage {
         let key = ImageKey.normal(isIncoming: viewModel.isIncoming, status: viewModel.status, showsTail: viewModel.decorationAttributes.isShowingTail, isSelected: isSelected)
 
-        if let image = self.images[key] {
+        if let image = self.images[key], !isHidden(viewModel: viewModel) {
             return image
         } else {
             let templateKey = ImageKey.template(isIncoming: viewModel.isIncoming, showsTail: viewModel.decorationAttributes.isShowingTail)
             if let image = self.images[templateKey] {
-                let image = self.createImage(templateImage: image, isIncoming: viewModel.isIncoming, status: viewModel.status, isSelected: isSelected)
+                let image = self.createImage(templateImage: image, isIncoming: viewModel.isIncoming, status: viewModel.status, isSelected: isSelected, viewModel: viewModel)
                 self.images[key] = image
                 return image
             }
@@ -123,9 +123,17 @@ open class TextMessageCollectionViewCellDefaultStyle: TextMessageCollectionViewC
         assert(false, "coulnd't find image for this status. ImageKey: \(key)")
         return UIImage()
     }
+    
+    private func isHidden(viewModel: TextMessageViewModelProtocol) -> Bool {
+        return viewModel.isHidden || viewModel.isDeleted
+    }
 
-    open func createImage(templateImage image: UIImage, isIncoming: Bool, status: MessageViewModelStatus, isSelected: Bool) -> UIImage {
+    open func createImage(templateImage image: UIImage, isIncoming: Bool, status: MessageViewModelStatus, isSelected: Bool, viewModel: TextMessageViewModelProtocol) -> UIImage {
         var color = isIncoming ? self.baseStyle.baseColorIncoming : self.baseStyle.baseColorOutgoing
+        
+        if isHidden(viewModel: viewModel) {
+            color = UIColor(red: 31.0/255, green: 30.0/255.0, blue: 41.0/255.0, alpha: 1)
+        }
 
         switch status {
         case .success:
@@ -137,7 +145,7 @@ open class TextMessageCollectionViewCellDefaultStyle: TextMessageCollectionViewC
             color = color.bma_blendWithColor(UIColor.white.withAlphaComponent(0.70))
         }
         
-        if isSelected {
+        if isSelected && !isHidden(viewModel: viewModel) {
             color = color.bma_blendWithColor(UIColor.black.withAlphaComponent(0.20))
         }
         return image.bma_tintWithColor(color)

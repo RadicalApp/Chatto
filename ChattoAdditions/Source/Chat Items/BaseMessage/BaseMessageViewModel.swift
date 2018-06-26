@@ -52,6 +52,8 @@ public protocol MessageViewModelProtocol: class { // why class? https://gist.git
     var isUserInteractionEnabled: Bool { get set }
     var isShowingFailedIcon: Bool { get }
     var date: String { get }
+    var isHidden: Bool { get }
+    var isDeleted: Bool { get }
     var status: MessageViewModelStatus { get }
     var avatarImage: Observable<UIImage?> { get set }
     func willBeShown() // Optional
@@ -80,6 +82,14 @@ extension DecoratedMessageViewModelProtocol {
 
     public var isIncoming: Bool {
         return self.messageViewModel.isIncoming
+    }
+    
+    public var isHidden: Bool {
+        return self.messageViewModel.isHidden
+    }
+    
+    public var isDeleted: Bool {
+        return self.messageViewModel.isDeleted
     }
 
     public var isUserInteractionEnabled: Bool {
@@ -116,6 +126,14 @@ extension DecoratedMessageViewModelProtocol {
 open class MessageViewModel: MessageViewModelProtocol {
     open var isIncoming: Bool {
         return self.messageModel.isIncoming
+    }
+    
+    open var isHidden: Bool {
+        return self.messageModel.isHidden
+    }
+    
+    open var isDeleted: Bool {
+        return self.messageModel.isDeleted
     }
 
     open var decorationAttributes: BaseMessageDecorationAttributes

@@ -28,6 +28,8 @@ import Chatto
 
 public struct UIResponderCustomEditActions {
     public static let delete = Selector(("deleteMessage"))
+    public static let hide = Selector(("hideMessage"))
+    public static let whereIsMyMessage = Selector(("showWhereIsMyMessage"))
 }
 
 public protocol BaseMessageCollectionViewCellStyleProtocol {
@@ -417,14 +419,32 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     }
     
     public var onDeleteTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
+    public var onHideTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
+    public var onWhereIsMyMessageTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
     @objc
     func deleteMessage() {
         self.onDeleteTapped?(self)
     }
+    @objc
+    func hideMessage() {
+        self.onHideTapped?(self)
+    }
+    @objc
+    func showWhereIsMyMessage() {
+        self.onWhereIsMyMessageTapped?(self)
+    }
     
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        let deleteSelector = UIResponderCustomEditActions.delete
-        return action == deleteSelector
+        var allowedSelector: Selector
+        
+        if self.messageViewModel.isHidden {
+            allowedSelector = UIResponderCustomEditActions.whereIsMyMessage
+        }else if self.messageViewModel.isIncoming {
+            allowedSelector = UIResponderCustomEditActions.hide
+        } else {
+            allowedSelector = UIResponderCustomEditActions.delete
+        }
+        return action == allowedSelector
     }
     
     open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

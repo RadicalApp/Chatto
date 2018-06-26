@@ -31,11 +31,14 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
     public struct Colors {
         let incoming: () -> UIColor
         let outgoing: () -> UIColor
+        let hidden: () -> UIColor
         public init(
             incoming: @autoclosure @escaping () -> UIColor,
-            outgoing: @autoclosure @escaping () -> UIColor) {
+            outgoing: @autoclosure @escaping () -> UIColor,
+            hidden: @autoclosure @escaping () -> UIColor) {
                 self.incoming = incoming
                 self.outgoing = outgoing
+                self.hidden = hidden
         }
     }
 
@@ -185,9 +188,10 @@ public extension BaseMessageCollectionViewCellDefaultStyle { // Default values
 
     private static let defaultIncomingColor = UIColor.bma_color(rgb: 0xE6ECF2)
     private static let defaultOutgoingColor = UIColor.bma_color(rgb: 0x3D68F5)
+    private static let defaultHiddenColor = UIColor.bma_color(rgb: 0x1F1E29)
 
     static public func createDefaultColors() -> Colors {
-        return Colors(incoming: self.defaultIncomingColor, outgoing: self.defaultOutgoingColor)
+        return Colors(incoming: self.defaultIncomingColor, outgoing: self.defaultOutgoingColor, hidden: self.defaultHiddenColor)
     }
 
     static public func createDefaultBubbleBorderImages() -> BubbleBorderImages {
