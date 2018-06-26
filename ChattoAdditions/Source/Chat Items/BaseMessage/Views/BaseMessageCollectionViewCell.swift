@@ -437,7 +437,7 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         var allowedSelector: Selector
         
-        if self.messageViewModel.isHidden {
+        if self.messageViewModel.isHidden || self.messageViewModel.isDeleted {
             allowedSelector = UIResponderCustomEditActions.whereIsMyMessage
         }else if self.messageViewModel.isIncoming {
             allowedSelector = UIResponderCustomEditActions.hide
