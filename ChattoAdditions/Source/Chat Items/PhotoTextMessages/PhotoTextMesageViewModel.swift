@@ -15,7 +15,7 @@ open class PhotoTextMessageViewModel<PhotoTextMessageModelT: PhotoTextMessageMod
     open var photoTextMessage: PhotoTextMessageModelProtocol {
         return self._photoTextMessage
     }
-    private let _photoTextMessage: PhotoTextMessageModelT // Can't make photoTextMessage: PhotoTextMessageModelT: https://gist.github.com/diegosanchezr/5a66c7af862e1117b556
+    public let _photoTextMessage: PhotoTextMessageModelT // Can't make photoTextMessage: PhotoTextMessageModelT: https://gist.github.com/diegosanchezr/5a66c7af862e1117b556
     public let messageViewModel: MessageViewModelProtocol
     
     public var transferStatus: Observable<TransferStatus> = Observable(.idle)

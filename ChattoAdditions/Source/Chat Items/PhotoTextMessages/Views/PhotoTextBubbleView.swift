@@ -70,6 +70,11 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
         return view
     }()
     
+    private lazy var blurEffectView: UIVisualEffectView = {
+        let view = UIVisualEffectView()
+        return view
+    }()
+    
     public private(set) var progressIndicatorView: CircleProgressIndicatorView = {
         return CircleProgressIndicatorView(size: CGSize(width: 33, height: 33))
     }()
@@ -88,6 +93,7 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
         imageView.autoresizingMask = UIViewAutoresizing()
         imageView.contentMode = .scaleAspectFill
         imageView.addSubview(borderView)
+        imageView.layer.cornerRadius = 5
         return imageView
     }()
     
@@ -146,7 +152,12 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
             overlayView.alpha = 0
         }
         borderView.image = photoTextMessageStyle.borderImage(viewModel: photoTextMessageViewModel)
-        imageView.layer.mask = UIImageView(image: photoTextMessageStyle.maskingImage(viewModel: photoTextMessageViewModel)).layer
+        if blurEffectView.superview == nil {
+            let blurEffect = UIBlurEffect(style: .light)
+            blurEffectView.effect = blurEffect
+            blurEffectView.alpha = 0.95
+            imageView.addSubview(blurEffectView)
+        }
     }
     
     // MARK:  Text Properties
@@ -193,13 +204,17 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
     private func updateViews() {
         if self.viewContext == .sizing { return }
         if isUpdating { return }
-        guard let style = photoTextMessageStyle else { return }
+        guard photoTextMessageViewModel != nil, let style = photoTextMessageStyle else { return }
         
         self.updateTextView()
         let bubbleImage = style.bubbleImage(viewModel: self.photoTextMessageViewModel, isSelected: self.selected)
         let borderImage = style.bubbleImageBorder(viewModel: self.photoTextMessageViewModel, isSelected: self.selected)
         if self.bubbleImageView.image != bubbleImage { self.bubbleImageView.image = bubbleImage }
         if self.borderImageView.image != borderImage { self.borderImageView.image = borderImage }
+        
+        self.updateProgressIndicator()
+        self.updateImages()
+        self.setNeedsLayout()
     }
     
     private func updateTextView() {
@@ -264,19 +279,10 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
         placeholderIconView.center = imageView.center
         placeholderIconView.bounds = CGRect(origin: .zero, size: layout.placeholderFrame.size)
         overlayView.bma_rect = imageView.bounds
+        blurEffectView.bma_rect = imageView.bounds
         bubbleImageView.bma_rect = layout.bubbleFrame
         borderImageView.bma_rect = bubbleImageView.bounds
     }
-    
-    /*
- let text: String
- let font: UIFont
- let photoSize: CGSize
- let placeholderSize: CGSize
- let isIncoming: Bool
- let textInsets: UIEdgeInsets
- let preferredMaxLayoutWidth: CGFloat
- */
     
     public var layoutCache: NSCache<AnyObject, AnyObject>!
     private func calculateTextBubbleLayout(preferredMaxLayoutWidth: CGFloat) -> PhotoTextBubbleLayoutModel {
@@ -359,16 +365,13 @@ private final class PhotoTextBubbleLayoutModel {
     }
     
     func calculateLayout() {
-        let textHorizontalInset = self.layoutContext.textInsets.bma_horziontalInset
-        let maxTextWidth = self.layoutContext.preferredMaxLayoutWidth - textHorizontalInset
-        let textSize = self.textSizeThatFitsWidth(maxTextWidth)
-        let bubbleSize = textSize.bma_outsetBy(dx: textHorizontalInset, dy: self.layoutContext.textInsets.bma_verticalInset)
-        let photoSize = self.layoutContext.photoSize
-        photoFrame = CGRect(origin: .zero, size: photoSize)
-        placeholderFrame = CGRect(origin: .zero, size: layoutContext.placeholderSize)
-        bubbleFrame = CGRect(origin: CGPoint.zero, size: bubbleSize)
+        let photoSize = CGSize(width: 50, height: 50)
+        let fixedBubbleSize = CGSize(width: 260, height: 80)
+        bubbleFrame = CGRect(origin: CGPoint.zero, size: fixedBubbleSize)
         textFrame = bubbleFrame
-        size = bubbleSize
+        photoFrame = CGRect(x: fixedBubbleSize.width - photoSize.width - 25, y: (fixedBubbleSize.height / 2) - (photoSize.height / 2), width: photoSize.width, height: photoSize.height)
+        placeholderFrame = photoFrame
+        size = fixedBubbleSize
     }
     
     private func textSizeThatFitsWidth(_ width: CGFloat) -> CGSize {

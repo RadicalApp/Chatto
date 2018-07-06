@@ -12,112 +12,18 @@ open class PhotoTextMessageCollectionViewCellDefaultStyle: PhotoTextMessageColle
     
     typealias Class = PhotoTextMessageCollectionViewCellDefaultStyle
     
-    public struct BubbleImages {
-        let incomingTail: () -> UIImage
-        let incomingNoTail: () -> UIImage
-        let outgoingTail: () -> UIImage
-        let outgoingNoTail: () -> UIImage
-        public init(
-            incomingTail: @autoclosure @escaping () -> UIImage,
-            incomingNoTail: @autoclosure @escaping () -> UIImage,
-            outgoingTail: @autoclosure @escaping () -> UIImage,
-            outgoingNoTail: @autoclosure @escaping () -> UIImage) {
-            self.incomingTail = incomingTail
-            self.incomingNoTail = incomingNoTail
-            self.outgoingTail = outgoingTail
-            self.outgoingNoTail = outgoingNoTail
-        }
-    }
-    
-    public struct BubbleMasks {
-        public let incomingTail: () -> UIImage
-        public let incomingNoTail: () -> UIImage
-        public let outgoingTail: () -> UIImage
-        public let outgoingNoTail: () -> UIImage
-        public let tailWidth: CGFloat
-        public init(
-            incomingTail: @autoclosure @escaping () -> UIImage,
-            incomingNoTail: @autoclosure @escaping () -> UIImage,
-            outgoingTail: @autoclosure @escaping () -> UIImage,
-            outgoingNoTail: @autoclosure @escaping () -> UIImage,
-            tailWidth: CGFloat) {
-            self.incomingTail = incomingTail
-            self.incomingNoTail = incomingNoTail
-            self.outgoingTail = outgoingTail
-            self.outgoingNoTail = outgoingNoTail
-            self.tailWidth = tailWidth
-        }
-    }
-    
-    public struct Sizes {
-        public let aspectRatioIntervalForSquaredSize: ClosedRange<CGFloat>
-        public let photoSizeLandscape: CGSize
-        public let photoSizePortrait: CGSize
-        public let photoSizeSquare: CGSize
-        public init(
-            aspectRatioIntervalForSquaredSize: ClosedRange<CGFloat>,
-            photoSizeLandscape: CGSize,
-            photoSizePortrait: CGSize,
-            photoSizeSquare: CGSize) {
-            self.aspectRatioIntervalForSquaredSize = aspectRatioIntervalForSquaredSize
-            self.photoSizeLandscape = photoSizeLandscape
-            self.photoSizePortrait = photoSizePortrait
-            self.photoSizeSquare = photoSizeSquare
-        }
-    }
-    
-    public struct Colors {
-        public let placeholderIconTintIncoming: UIColor
-        public let placeholderIconTintOutgoing: UIColor
-        public let progressIndicatorColorIncoming: UIColor
-        public let progressIndicatorColorOutgoing: UIColor
-        public let overlayColor: UIColor
-        public init(
-            placeholderIconTintIncoming: UIColor,
-            placeholderIconTintOutgoing: UIColor,
-            progressIndicatorColorIncoming: UIColor,
-            progressIndicatorColorOutgoing: UIColor,
-            overlayColor: UIColor) {
-            self.placeholderIconTintIncoming = placeholderIconTintIncoming
-            self.placeholderIconTintOutgoing = placeholderIconTintOutgoing
-            self.progressIndicatorColorIncoming = progressIndicatorColorIncoming
-            self.progressIndicatorColorOutgoing = progressIndicatorColorOutgoing
-            self.overlayColor = overlayColor
-        }
-    }
-    
-    public struct TextStyle {
-        let font: () -> UIFont
-        let incomingColor: () -> UIColor
-        let outgoingColor: () -> UIColor
-        let incomingInsets: UIEdgeInsets
-        let outgoingInsets: UIEdgeInsets
-        public init(
-            font: @autoclosure @escaping () -> UIFont,
-            incomingColor: @autoclosure @escaping () -> UIColor,
-            outgoingColor: @autoclosure @escaping () -> UIColor,
-            incomingInsets: UIEdgeInsets,
-            outgoingInsets: UIEdgeInsets) {
-            self.font = font
-            self.incomingColor = incomingColor
-            self.outgoingColor = outgoingColor
-            self.incomingInsets = incomingInsets
-            self.outgoingInsets = outgoingInsets
-        }
-    }
-    
-    let bubbleMasks: BubbleMasks
-    let sizes: Sizes
-    let colors: Colors
-    public let bubbleImages: BubbleImages
-    public let textStyle: TextStyle
+    let bubbleMasks: PhotoMessageCollectionViewCellDefaultStyle.BubbleMasks
+    let sizes: PhotoMessageCollectionViewCellDefaultStyle.Sizes
+    let colors: PhotoMessageCollectionViewCellDefaultStyle.Colors
+    public let bubbleImages: TextMessageCollectionViewCellDefaultStyle.BubbleImages
+    public let textStyle: TextMessageCollectionViewCellDefaultStyle.TextStyle
     public let baseStyle: BaseMessageCollectionViewCellDefaultStyle
     public init (
-        bubbleMasks: BubbleMasks = Class.createDefaultBubbleMasks(),
-        sizes: Sizes = Class.createDefaultSizes(),
-        colors: Colors = Class.createDefaultColors(),
-        bubbleImages: BubbleImages = Class.createDefaultBubbleImages(),
-        textStyle: TextStyle = Class.createDefaultTextStyle(),
+        bubbleMasks: PhotoMessageCollectionViewCellDefaultStyle.BubbleMasks = Class.createDefaultBubbleMasks(),
+        sizes: PhotoMessageCollectionViewCellDefaultStyle.Sizes = Class.createDefaultSizes(),
+        colors: PhotoMessageCollectionViewCellDefaultStyle.Colors = Class.createDefaultColors(),
+        bubbleImages: TextMessageCollectionViewCellDefaultStyle.BubbleImages = Class.createDefaultBubbleImages(),
+        textStyle: TextMessageCollectionViewCellDefaultStyle.TextStyle = Class.createDefaultTextStyle(),
         baseStyle: BaseMessageCollectionViewCellDefaultStyle = BaseMessageCollectionViewCellDefaultStyle()) {
         self.bubbleMasks = bubbleMasks
         self.sizes = sizes
@@ -300,8 +206,8 @@ open class PhotoTextMessageCollectionViewCellDefaultStyle: PhotoTextMessageColle
 
 public extension PhotoTextMessageCollectionViewCellDefaultStyle { // Default values
     
-    static public func createDefaultBubbleImages() -> BubbleImages {
-        return BubbleImages(
+    static public func createDefaultBubbleImages() -> TextMessageCollectionViewCellDefaultStyle.BubbleImages {
+        return TextMessageCollectionViewCellDefaultStyle.BubbleImages(
             incomingTail: UIImage(named: "bubble-incoming-tail", in: Bundle(for: Class.self), compatibleWith: nil)!,
             incomingNoTail: UIImage(named: "bubble-incoming", in: Bundle(for: Class.self), compatibleWith: nil)!,
             outgoingTail: UIImage(named: "bubble-outgoing-tail", in: Bundle(for: Class.self), compatibleWith: nil)!,
@@ -309,18 +215,18 @@ public extension PhotoTextMessageCollectionViewCellDefaultStyle { // Default val
         )
     }
     
-    static public func createDefaultTextStyle() -> TextStyle {
-        return TextStyle(
+    static public func createDefaultTextStyle() -> TextMessageCollectionViewCellDefaultStyle.TextStyle {
+        return TextMessageCollectionViewCellDefaultStyle.TextStyle(
             font: UIFont.systemFont(ofSize: 16),
             incomingColor: UIColor.black,
             outgoingColor: UIColor.white,
-            incomingInsets: UIEdgeInsets(top: 10, left: 19, bottom: 10, right: 15),
-            outgoingInsets: UIEdgeInsets(top: 10, left: 15, bottom: 10, right: 19)
+            incomingInsets: UIEdgeInsets(top: 30, left: 19, bottom: 30, right: 15),
+            outgoingInsets: UIEdgeInsets(top: 30, left: 15, bottom: 30, right: 19)
         )
     }
     
-    static public func createDefaultBubbleMasks() -> BubbleMasks {
-        return BubbleMasks(
+    static public func createDefaultBubbleMasks() -> PhotoMessageCollectionViewCellDefaultStyle.BubbleMasks {
+        return PhotoMessageCollectionViewCellDefaultStyle.BubbleMasks(
             incomingTail: UIImage(named: "bubble-incoming-tail", in: Bundle(for: Class.self), compatibleWith: nil)!,
             incomingNoTail: UIImage(named: "bubble-incoming", in: Bundle(for: Class.self), compatibleWith: nil)!,
             outgoingTail: UIImage(named: "bubble-outgoing-tail", in: Bundle(for: Class.self), compatibleWith: nil)!,
@@ -329,8 +235,8 @@ public extension PhotoTextMessageCollectionViewCellDefaultStyle { // Default val
         )
     }
     
-    static public func createDefaultSizes() -> Sizes {
-        return Sizes(
+    static public func createDefaultSizes() -> PhotoMessageCollectionViewCellDefaultStyle.Sizes {
+        return PhotoMessageCollectionViewCellDefaultStyle.Sizes(
             aspectRatioIntervalForSquaredSize: 0.90...1.10,
             photoSizeLandscape: CGSize(width: 210, height: 136),
             photoSizePortrait: CGSize(width: 136, height: 210),
@@ -338,8 +244,8 @@ public extension PhotoTextMessageCollectionViewCellDefaultStyle { // Default val
         )
     }
     
-    static public func createDefaultColors() -> Colors {
-        return Colors(
+    static public func createDefaultColors() -> PhotoMessageCollectionViewCellDefaultStyle.Colors {
+        return PhotoMessageCollectionViewCellDefaultStyle.Colors(
             placeholderIconTintIncoming: UIColor.bma_color(rgb: 0xced6dc),
             placeholderIconTintOutgoing: UIColor.bma_color(rgb: 0x508dfc),
             progressIndicatorColorIncoming: UIColor.bma_color(rgb: 0x98a3ab),
