@@ -225,9 +225,12 @@ extension ChatInputBar {
         self.tabBarContentInsets = appearance.tabBarAppearance.contentInsets
         self.sendButton.contentEdgeInsets = appearance.sendButtonAppearance.insets
         self.sendButton.setTitle(appearance.sendButtonAppearance.title, for: .normal)
+        appearance.sendButtonAppearance.images?.forEach { (state, color) in
+            self.sendButton.setImage(color, for: state.controlState)
+        }
         appearance.sendButtonAppearance.titleColors.forEach { (state, color) in
             self.sendButton.setTitleColor(color, for: state.controlState)
-        }
+        }        
         self.sendButton.backgroundColor = appearance.sendButtonAppearance.backgroundColor
         self.textView.backgroundColor = appearance.textInputAppearance.backgroundColor
         self.scrollView.backgroundColor = appearance.textInputAppearance.backgroundColor
