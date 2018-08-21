@@ -70,11 +70,6 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
         return view
     }()
     
-    private lazy var blurEffectView: UIVisualEffectView = {
-        let view = UIVisualEffectView()
-        return view
-    }()
-    
     public private(set) var progressIndicatorView: CircleProgressIndicatorView = {
         return CircleProgressIndicatorView(size: CGSize(width: 33, height: 33))
     }()
@@ -152,12 +147,6 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
             overlayView.alpha = 0
         }
         borderView.image = photoTextMessageStyle.borderImage(viewModel: photoTextMessageViewModel)
-        if blurEffectView.superview == nil {
-            let blurEffect = UIBlurEffect(style: .light)
-            blurEffectView.effect = blurEffect
-            blurEffectView.alpha = 0.95
-            imageView.addSubview(blurEffectView)
-        }
     }
     
     // MARK:  Text Properties
@@ -279,7 +268,6 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
         placeholderIconView.center = imageView.center
         placeholderIconView.bounds = CGRect(origin: .zero, size: layout.placeholderFrame.size)
         overlayView.bma_rect = imageView.bounds
-        blurEffectView.bma_rect = imageView.bounds
         bubbleImageView.bma_rect = layout.bubbleFrame
         borderImageView.bma_rect = bubbleImageView.bounds
     }
