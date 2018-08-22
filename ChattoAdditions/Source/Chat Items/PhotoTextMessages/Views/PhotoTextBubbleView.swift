@@ -65,11 +65,6 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
     
     // MARK:  Image Properties
     
-    private lazy var overlayView: UIView = {
-        let view = UIView()
-        return view
-    }()
-    
     public private(set) var progressIndicatorView: CircleProgressIndicatorView = {
         return CircleProgressIndicatorView(size: CGSize(width: 33, height: 33))
     }()
@@ -135,16 +130,6 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
         } else {
             self.imageView.image = photoTextMessageStyle.placeholderBackgroundImage(viewModel: photoTextMessageViewModel)
             self.placeholderIconView.isHidden = self.photoTextMessageViewModel.transferStatus.value != .failed
-        }
-        
-        if let overlayColor = photoTextMessageStyle.overlayColor(viewModel: photoTextMessageViewModel) {
-            overlayView.backgroundColor = overlayColor
-            overlayView.alpha = 1
-            if overlayView.superview == nil {
-                imageView.addSubview(overlayView)
-            }
-        } else {
-            overlayView.alpha = 0
         }
         borderView.image = photoTextMessageStyle.borderImage(viewModel: photoTextMessageViewModel)
     }
@@ -267,7 +252,6 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
         progressIndicatorView.center = imageView.center
         placeholderIconView.center = imageView.center
         placeholderIconView.bounds = CGRect(origin: .zero, size: layout.placeholderFrame.size)
-        overlayView.bma_rect = imageView.bounds
         bubbleImageView.bma_rect = layout.bubbleFrame
         borderImageView.bma_rect = bubbleImageView.bounds
     }
