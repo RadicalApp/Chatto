@@ -181,6 +181,10 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
         guard photoTextMessageViewModel != nil, let style = photoTextMessageStyle else { return }
         
         self.updateTextView()
+        
+        imageView.isHidden = _isHidden
+        placeholderIconView.isHidden = _isHidden
+        
         let bubbleImage = style.bubbleImage(viewModel: self.photoTextMessageViewModel, isSelected: self.selected)
         let borderImage = style.bubbleImageBorder(viewModel: self.photoTextMessageViewModel, isSelected: self.selected)
         if self.bubbleImageView.image != bubbleImage { self.bubbleImageView.image = bubbleImage }
@@ -244,9 +248,9 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
     // MARK: Layout
     public override func layoutSubviews() {
         super.layoutSubviews()
+        
         let layout = self.calculateTextBubbleLayout(preferredMaxLayoutWidth: self.preferredMaxLayoutWidth)
         textView.bma_rect = layout.textFrame
-        
         imageView.bma_rect = layout.photoFrame
         imageView.layer.mask?.frame = imageView.layer.bounds
         progressIndicatorView.center = imageView.center
@@ -261,11 +265,13 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
         let layoutContext = PhotoTextBubbleLayoutModel.LayoutContext(
             text: _text,
             font: photoTextMessageStyle.textFont(viewModel: photoTextMessageViewModel, isSelected: selected),
-            photoSize: photoTextMessageViewModel.imageSize,
+            photoSize: CGSize(width: 50, height: 50), //photoTextMessageViewModel.imageSize,
             placeholderSize: photoTextMessageViewModel.imageSize,
             isIncoming: photoTextMessageViewModel.isIncoming,
             textInsets: photoTextMessageStyle.textInsets(viewModel: photoTextMessageViewModel, isSelected: selected),
-            preferredMaxLayoutWidth: preferredMaxLayoutWidth
+            preferredMaxLayoutWidth: preferredMaxLayoutWidth,
+            imageOffset: 30,
+            isDeleted: _isHidden
         )
         
         if let layoutModel = self.layoutCache.object(forKey: layoutContext.hashValue as AnyObject) as? PhotoTextBubbleLayoutModel, layoutModel.layoutContext == layoutContext {
@@ -324,9 +330,11 @@ private final class PhotoTextBubbleLayoutModel {
         let isIncoming: Bool
         let textInsets: UIEdgeInsets
         let preferredMaxLayoutWidth: CGFloat
+        let imageOffset: CGFloat
+        let isDeleted: Bool
         
         var hashValue: Int {
-            return Chatto.bma_combine(hashes: [self.text.hashValue, self.textInsets.bma_hashValue, self.preferredMaxLayoutWidth.hashValue, self.font.hashValue])
+            return Chatto.bma_combine(hashes: [self.text.hashValue, self.textInsets.bma_hashValue, self.preferredMaxLayoutWidth.hashValue, self.font.hashValue, self.isDeleted.hashValue])
         }
         
 //        static func == (lhs: PhotoTextBubbleLayoutModel.LayoutContext, rhs: PhotoTextBubbleLayoutModel.LayoutContext) -> Bool {
@@ -337,13 +345,26 @@ private final class PhotoTextBubbleLayoutModel {
     }
     
     func calculateLayout() {
-        let photoSize = CGSize(width: 50, height: 50)
-        let fixedBubbleSize = CGSize(width: 260, height: 80)
-        bubbleFrame = CGRect(origin: CGPoint.zero, size: fixedBubbleSize)
-        textFrame = bubbleFrame
-        photoFrame = CGRect(x: fixedBubbleSize.width - photoSize.width - 25, y: (fixedBubbleSize.height / 2) - (photoSize.height / 2), width: photoSize.width, height: photoSize.height)
-        placeholderFrame = photoFrame
-        size = fixedBubbleSize
+        if layoutContext.isDeleted {
+            bubbleFrame = CGRect(x: 0, y: 0, width: 170, height: 54)
+            photoFrame = CGRect(origin: .zero, size: .zero)
+            size = bubbleFrame.size
+            textFrame = CGRect.zero
+        } else {
+            let photoSize = layoutContext.photoSize
+            let photoHorizontalOffset: CGFloat = 25
+            let textHorizontalInset = layoutContext.textInsets.bma_horziontalInset
+            let maxTextWidth = layoutContext.preferredMaxLayoutWidth - textHorizontalInset
+            let textSize = textSizeThatFitsWidth(maxTextWidth)
+            let bubbleSize = textSize.bma_outsetBy(dx: textHorizontalInset, dy: layoutContext.textInsets.bma_verticalInset)
+            textFrame = CGRect(origin: CGPoint.zero, size: bubbleSize)
+            let frameSize = CGSize(width: textFrame.width + 2*photoHorizontalOffset + photoSize.width, height: textFrame.height)
+            
+            photoFrame = CGRect(x: (frameSize.width - (photoSize.width + photoHorizontalOffset)), y: ((frameSize.height - photoSize.height) / 2), width: photoSize.width, height: photoSize.height)
+            placeholderFrame = photoFrame
+            bubbleFrame = CGRect(origin: CGPoint.zero, size: frameSize)
+            size = frameSize
+        }
     }
     
     private func textSizeThatFitsWidth(_ width: CGFloat) -> CGSize {
