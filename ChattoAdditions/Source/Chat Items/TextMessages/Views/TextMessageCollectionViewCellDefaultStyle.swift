@@ -140,10 +140,6 @@ open class TextMessageCollectionViewCellDefaultStyle: TextMessageCollectionViewC
         case .failed, .sending:
             color = color.bma_blendWithColor(UIColor.white.withAlphaComponent(0.70))
         }
-        if isHidden {
-            color = UIColor(red: 31.0/255, green: 30.0/255.0, blue: 41.0/255.0, alpha: 1)
-        }
-        
         if isSelected && !isHidden {
             color = color.bma_blendWithColor(UIColor.black.withAlphaComponent(0.20))
         }
