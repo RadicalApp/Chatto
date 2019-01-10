@@ -75,6 +75,7 @@ open class ChatInputBar: ReusableXibView {
         self.topBorderHeightConstraint.constant = 1 / UIScreen.main.scale
         self.textView.scrollsToTop = false
         self.textView.delegate = self
+        self.textView.keyboardAppearance = .dark
         self.textView.placeholderDelegate = self
         self.scrollView.scrollsToTop = false
         self.sendButton.isEnabled = false
