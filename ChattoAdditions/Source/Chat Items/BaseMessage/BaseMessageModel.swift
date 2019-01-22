@@ -29,6 +29,7 @@ public enum MessageStatus {
     case failed
     case sending
     case success
+    case read
 }
 
 public protocol MessageModelProtocol: ChatItemProtocol {
@@ -36,6 +37,8 @@ public protocol MessageModelProtocol: ChatItemProtocol {
     var isIncoming: Bool { get }
     var date: Date { get }
     var status: MessageStatus { get }
+    var isHidden: Bool { get set }
+    var isDeleted: Bool { get set }
 }
 
 public protocol DecoratedMessageModelProtocol: MessageModelProtocol {
@@ -66,6 +69,24 @@ public extension DecoratedMessageModelProtocol {
     var status: MessageStatus {
         return self.messageModel.status
     }
+    
+    var isHidden: Bool {
+        get {
+            return self.messageModel.isHidden
+        }
+        set {
+            self.messageModel.isHidden = newValue
+        }
+    }
+    
+    var isDeleted: Bool {
+        get {
+            return self.messageModel.isDeleted
+        }
+        set {
+            self.messageModel.isDeleted = newValue
+        }
+    }
 }
 
 open class MessageModel: MessageModelProtocol {
@@ -75,13 +96,17 @@ open class MessageModel: MessageModelProtocol {
     open var isIncoming: Bool
     open var date: Date
     open var status: MessageStatus
+    open var isHidden: Bool
+    open var isDeleted: Bool
 
-    public init(uid: String, senderId: String, type: String, isIncoming: Bool, date: Date, status: MessageStatus) {
+    public init(uid: String, senderId: String, type: String, isIncoming: Bool, date: Date, status: MessageStatus, isHidden: Bool, isDeleted: Bool) {
         self.uid = uid
         self.senderId = senderId
         self.type = type
         self.isIncoming = isIncoming
         self.date = date
         self.status = status
+        self.isHidden = isHidden
+        self.isDeleted = isDeleted
     }
 }

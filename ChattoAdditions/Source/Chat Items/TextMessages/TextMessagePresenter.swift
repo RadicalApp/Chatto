@@ -111,7 +111,8 @@ open class TextMessagePresenter<ViewModelBuilderT, InteractionHandlerT>
 
     open override func canPerformMenuControllerAction(_ action: Selector) -> Bool {
         let selector = #selector(UIResponderStandardEditActions.copy(_:))
-        return action == selector
+        let deleteSelector = UIResponderCustomEditActions.delete
+        return action == selector || action == deleteSelector
     }
 
     open override func performMenuControllerAction(_ action: Selector) {

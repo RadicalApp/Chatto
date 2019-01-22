@@ -25,6 +25,13 @@
 import UIKit
 import Chatto
 
+
+public struct UIResponderCustomEditActions {
+    public static let delete = Selector(("deleteMessage"))
+    public static let hide = Selector(("hideMessage"))
+    public static let whereIsMyMessage = Selector(("showWhereIsMyMessage"))
+}
+
 public protocol BaseMessageCollectionViewCellStyleProtocol {
     func avatarSize(viewModel: MessageViewModelProtocol) -> CGSize // .zero => no avatar
     func avatarVerticalAlignment(viewModel: MessageViewModelProtocol) -> VerticalAlignment
@@ -228,11 +235,15 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     private func updateAvatarView(from viewModel: MessageViewModelProtocol,
                                   with style: BaseMessageCollectionViewCellStyleProtocol) {
         self.avatarView.isHidden = !viewModel.decorationAttributes.isShowingAvatar
-
-        let avatarImageSize = style.avatarSize(viewModel: viewModel)
+        
+        let avatarImageSize = _avatarSize(viewModel, style: style)
         if avatarImageSize != .zero {
             self.avatarView.image = viewModel.avatarImage.value
         }
+    }
+    
+    private func _avatarSize(_ viewModel: MessageViewModelProtocol, style: BaseMessageCollectionViewCellStyleProtocol) -> CGSize {
+        return viewModel.decorationAttributes.isShowingAvatar ? style.avatarSize(viewModel: viewModel) : CGSize.zero
     }
 
     // MARK: layout
@@ -246,6 +257,9 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         self.bubbleView.layoutIfNeeded()
 
         self.avatarView.bma_rect = layout.avatarViewFrame
+        self.avatarView.layer.cornerRadius = self.avatarView.frame.size.width / 2
+        self.avatarView.clipsToBounds = true
+        
         self.selectionIndicator.bma_rect = layout.selectionIndicatorFrame
 
         if self.accessoryTimestampView.superview != nil {
@@ -280,7 +294,7 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
             isIncoming: self.messageViewModel.isIncoming,
             isShowingFailedButton: self.shouldShowFailedIcon,
             failedButtonSize: self.baseStyle.failedIcon.size,
-            avatarSize: self.baseStyle.avatarSize(viewModel: self.messageViewModel),
+            avatarSize: _avatarSize(self.messageViewModel, style: self.baseStyle),
             avatarVerticalAlignment: self.baseStyle.avatarVerticalAlignment(viewModel: self.messageViewModel),
             isShowingSelectionIndicator: self.messageViewModel.decorationAttributes.isShowingSelectionIndicator,
             selectionIndicatorSize: self.baseStyle.selectionIndicatorIcon(for: self.messageViewModel).size,
@@ -397,11 +411,63 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         case .began:
             self.onBubbleLongPressBegan?(self)
         case .ended, .cancelled:
+            print("Longg presses cancelled")
             self.onBubbleLongPressEnded?(self)
         default:
             break
         }
     }
+    
+    public var onDeleteTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
+    public var onHideTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
+    public var onWhereIsMyMessageTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
+    @objc
+    func deleteMessage() {
+        self.onDeleteTapped?(self)
+    }
+    @objc
+    func hideMessage() {
+        self.onHideTapped?(self)
+    }
+    @objc
+    func showWhereIsMyMessage() {
+        self.onWhereIsMyMessageTapped?(self)
+    }
+    
+    open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        var allowedSelector: Selector
+        
+        if self.messageViewModel.isHidden || self.messageViewModel.isDeleted {
+            allowedSelector = UIResponderCustomEditActions.whereIsMyMessage
+        }else if self.messageViewModel.isIncoming {
+            allowedSelector = UIResponderCustomEditActions.hide
+        } else {
+            allowedSelector = UIResponderCustomEditActions.delete
+        }
+        return action == allowedSelector
+    }
+    
+    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        print("Touches Began")
+    }
+    
+    open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        print("Touches Ended")
+    }
+    
+    open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        print("Touches Cancelled")
+    }
+    
+    open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
+        print("Touches Moved")
+    }
+    
+    
 }
 
 private struct Layout {

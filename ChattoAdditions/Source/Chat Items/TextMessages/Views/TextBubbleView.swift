@@ -150,7 +150,11 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
         let textColor = style.textColor(viewModel: viewModel, isSelected: self.selected)
 
         var needsToUpdateText = false
-
+        
+        if self.textView.isHidden != _isHidden {
+            self.textView.isHidden = _isHidden
+            needsToUpdateText = true
+        }
         if self.textView.font != font {
             self.textView.font = font
             needsToUpdateText = true
@@ -164,13 +168,21 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
             ]
             needsToUpdateText = true
         }
-
         if needsToUpdateText || self.textView.text != viewModel.text {
-            self.textView.text = viewModel.text
+            self.textView.text = _text
         }
 
         let textInsets = style.textInsets(viewModel: viewModel, isSelected: self.selected)
         if self.textView.textContainerInset != textInsets { self.textView.textContainerInset = textInsets }
+    }
+    
+    private var _isHidden: Bool {
+        return (self.textMessageViewModel.isHidden || self.textMessageViewModel.isDeleted)
+    }
+    
+    private var _text: String {
+        guard let viewModel = self.textMessageViewModel else { return "" }
+        return _isHidden ? "xxxxxxx xxxxxxx" : viewModel.text
     }
 
     private func bubbleImage() -> UIImage {
@@ -193,7 +205,7 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
     public var layoutCache: NSCache<AnyObject, AnyObject>!
     private func calculateTextBubbleLayout(preferredMaxLayoutWidth: CGFloat) -> TextBubbleLayoutModel {
         let layoutContext = TextBubbleLayoutModel.LayoutContext(
-            text: self.textMessageViewModel.text,
+            text: _text,
             font: self.style.textFont(viewModel: self.textMessageViewModel, isSelected: self.selected),
             textInsets: self.style.textInsets(viewModel: self.textMessageViewModel, isSelected: self.selected),
             preferredMaxLayoutWidth: preferredMaxLayoutWidth
@@ -213,6 +225,26 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
     public var canCalculateSizeInBackground: Bool {
         return true
     }
+    
+    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+    }
+    
+    open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        print("Touches Ended")
+    }
+    
+    open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        print("Touches Cancelled")
+    }
+    
+    open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
+        print("Touches Moved")
+    }
+    
 }
 
 private final class TextBubbleLayoutModel {

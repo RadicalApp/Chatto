@@ -61,6 +61,7 @@ open class ChatInputBar: ReusableXibView {
     class open func loadNib() -> ChatInputBar {
         let view = Bundle(for: self).loadNibNamed(self.nibName(), owner: nil, options: nil)!.first as! ChatInputBar
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
         view.frame = CGRect.zero
         return view
     }
@@ -74,6 +75,7 @@ open class ChatInputBar: ReusableXibView {
         self.topBorderHeightConstraint.constant = 1 / UIScreen.main.scale
         self.textView.scrollsToTop = false
         self.textView.delegate = self
+        self.textView.keyboardAppearance = .dark
         self.textView.placeholderDelegate = self
         self.scrollView.scrollsToTop = false
         self.sendButton.isEnabled = false
@@ -224,9 +226,15 @@ extension ChatInputBar {
         self.tabBarContentInsets = appearance.tabBarAppearance.contentInsets
         self.sendButton.contentEdgeInsets = appearance.sendButtonAppearance.insets
         self.sendButton.setTitle(appearance.sendButtonAppearance.title, for: .normal)
+        appearance.sendButtonAppearance.images?.forEach { (state, color) in
+            self.sendButton.setImage(color, for: state.controlState)
+        }
         appearance.sendButtonAppearance.titleColors.forEach { (state, color) in
             self.sendButton.setTitleColor(color, for: state.controlState)
-        }
+        }        
+        self.sendButton.backgroundColor = appearance.sendButtonAppearance.backgroundColor
+        self.textView.backgroundColor = appearance.textInputAppearance.backgroundColor
+        self.scrollView.backgroundColor = appearance.textInputAppearance.backgroundColor
         self.sendButton.titleLabel?.font = appearance.sendButtonAppearance.font
         self.sendButton.accessibilityIdentifier = appearance.sendButtonAppearance.accessibilityIdentifier
         self.tabBarContainerHeightConstraint.constant = appearance.tabBarAppearance.height

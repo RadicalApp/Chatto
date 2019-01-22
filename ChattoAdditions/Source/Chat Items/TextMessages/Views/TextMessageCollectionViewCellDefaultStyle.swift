@@ -107,14 +107,14 @@ open class TextMessageCollectionViewCellDefaultStyle: TextMessageCollectionViewC
     }
 
     open func bubbleImage(viewModel: TextMessageViewModelProtocol, isSelected: Bool) -> UIImage {
-        let key = ImageKey.normal(isIncoming: viewModel.isIncoming, status: viewModel.status, showsTail: viewModel.decorationAttributes.isShowingTail, isSelected: isSelected)
+        let key = ImageKey.normal(isIncoming: viewModel.isIncoming, status: viewModel.status, showsTail: viewModel.decorationAttributes.isShowingTail, isSelected: isSelected, isHidden: isHidden(viewModel: viewModel))
 
         if let image = self.images[key] {
             return image
         } else {
             let templateKey = ImageKey.template(isIncoming: viewModel.isIncoming, showsTail: viewModel.decorationAttributes.isShowingTail)
             if let image = self.images[templateKey] {
-                let image = self.createImage(templateImage: image, isIncoming: viewModel.isIncoming, status: viewModel.status, isSelected: isSelected)
+                let image = self.createImage(templateImage: image, isIncoming: viewModel.isIncoming, status: viewModel.status, isSelected: isSelected, isHidden: isHidden(viewModel: viewModel))
                 self.images[key] = image
                 return image
             }
@@ -123,34 +123,39 @@ open class TextMessageCollectionViewCellDefaultStyle: TextMessageCollectionViewC
         assert(false, "coulnd't find image for this status. ImageKey: \(key)")
         return UIImage()
     }
+    
+    private func isHidden(viewModel: TextMessageViewModelProtocol) -> Bool {
+        return viewModel.isHidden || viewModel.isDeleted
+    }
 
-    open func createImage(templateImage image: UIImage, isIncoming: Bool, status: MessageViewModelStatus, isSelected: Bool) -> UIImage {
+    open func createImage(templateImage image: UIImage, isIncoming: Bool, status: MessageViewModelStatus, isSelected: Bool, isHidden: Bool) -> UIImage {
         var color = isIncoming ? self.baseStyle.baseColorIncoming : self.baseStyle.baseColorOutgoing
-
+        
         switch status {
         case .success:
+            break
+        case .read:
+            color = color.bma_blendWithColor(UIColor.black.withAlphaComponent(0.10))
             break
         case .failed, .sending:
             color = color.bma_blendWithColor(UIColor.white.withAlphaComponent(0.70))
         }
-
-        if isSelected {
-            color = color.bma_blendWithColor(UIColor.black.withAlphaComponent(0.10))
+        if isSelected && !isHidden {
+            color = color.bma_blendWithColor(UIColor.black.withAlphaComponent(0.20))
         }
-
         return image.bma_tintWithColor(color)
     }
 
     private enum ImageKey: Hashable {
         case template(isIncoming: Bool, showsTail: Bool)
-        case normal(isIncoming: Bool, status: MessageViewModelStatus, showsTail: Bool, isSelected: Bool)
+        case normal(isIncoming: Bool, status: MessageViewModelStatus, showsTail: Bool, isSelected: Bool, isHidden: Bool)
 
         var hashValue: Int {
             switch self {
             case let .template(isIncoming: isIncoming, showsTail: showsTail):
                 return Chatto.bma_combine(hashes: [1 /*template*/, isIncoming.hashValue, showsTail.hashValue])
-            case let .normal(isIncoming: isIncoming, status: status, showsTail: showsTail, isSelected: isSelected):
-                return Chatto.bma_combine(hashes: [2 /*normal*/, isIncoming.hashValue, status.hashValue, showsTail.hashValue, isSelected.hashValue])
+            case let .normal(isIncoming: isIncoming, status: status, showsTail: showsTail, isSelected: isSelected, isHidden: isHidden):
+                return Chatto.bma_combine(hashes: [2 /*normal*/, isIncoming.hashValue, status.hashValue, showsTail.hashValue, isSelected.hashValue, isHidden.hashValue])
             }
         }
 
