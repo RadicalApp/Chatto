@@ -17,11 +17,12 @@ open class PhotoTextMessageViewModel<PhotoTextMessageModelT: PhotoTextMessageMod
     }
     public let _photoTextMessage: PhotoTextMessageModelT // Can't make photoTextMessage: PhotoTextMessageModelT: https://gist.github.com/diegosanchezr/5a66c7af862e1117b556
     public let messageViewModel: MessageViewModelProtocol
-    
     public var transferStatus: Observable<TransferStatus> = Observable(.idle)
     public var transferProgress: Observable<Double> = Observable(0)
     public var transferDirection: Observable<TransferDirection> = Observable(.download)
     public var image: Observable<UIImage?>
+    public var cellAccessibilityIdentifier: String = "chatto.message.photoText.cell"
+    public var bubbleAccessibilityIdentifier: String = "chatto.message.photoText.bubble"
     open var imageSize: CGSize {
         return self.photoTextMessage.imageSize
     }

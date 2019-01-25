@@ -71,16 +71,16 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
     
     private var placeholderIconView: UIImageView = {
         let imageView = UIImageView()
-        imageView.autoresizingMask = UIViewAutoresizing()
+        imageView.autoresizingMask = UIView.AutoresizingMask()
         return imageView
     }()
     
     public private(set) lazy var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.autoresizingMask = UIViewAutoresizing()
+        imageView.autoresizingMask = UIView.AutoresizingMask()
         imageView.clipsToBounds = true
         imageView.autoresizesSubviews = false
-        imageView.autoresizingMask = UIViewAutoresizing()
+        imageView.autoresizingMask = UIView.AutoresizingMask()
         imageView.contentMode = .scaleAspectFill
         imageView.addSubview(borderView)
         imageView.layer.cornerRadius = 5
@@ -215,8 +215,8 @@ public final class PhotoTextBubbleView: UIView, MaximumLayoutWidthSpecificable, 
         if self.textView.textColor != textColor {
             self.textView.textColor = textColor
             self.textView.linkTextAttributes = [
-                NSAttributedStringKey.foregroundColor.rawValue: textColor,
-                NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue
+                NSAttributedString.Key.foregroundColor: textColor,
+                NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
             ]
             needsToUpdateText = true
         }
@@ -390,8 +390,8 @@ private final class PhotoTextBubbleLayoutModel {
     private func replicateUITextViewNSTextStorage() -> NSTextStorage {
         // See https://github.com/badoo/Chatto/issues/129
         return NSTextStorage(string: self.layoutContext.text, attributes: [
-            NSAttributedStringKey.font: self.layoutContext.font,
-            NSAttributedStringKey(rawValue: "NSOriginalFont"): self.layoutContext.font
+            NSAttributedString.Key.font: self.layoutContext.font,
+            NSAttributedString.Key(rawValue: "NSOriginalFont"): self.layoutContext.font
             ])
     }
 }
