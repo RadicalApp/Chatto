@@ -31,6 +31,7 @@ public enum CellVerticalEdge {
 
 extension CGFloat {
     static let bma_epsilon: CGFloat = 0.001
+    static let dust_epsilon: CGFloat = 0.2
 }
 
 extension BaseChatViewController {
@@ -69,9 +70,9 @@ extension BaseChatViewController {
         let visibleRect = self.visibleRect()
         let intersection = visibleRect.intersection(attributes.frame)
         if edge == .top {
-            return abs(intersection.minY - attributes.frame.minY) < CGFloat.bma_epsilon
+            return abs(intersection.minY - attributes.frame.minY) < CGFloat.dust_epsilon
         } else {
-            return abs(intersection.maxY - attributes.frame.maxY) < CGFloat.bma_epsilon
+            return abs(intersection.maxY - attributes.frame.maxY) < CGFloat.dust_epsilon
         }
     }
 
