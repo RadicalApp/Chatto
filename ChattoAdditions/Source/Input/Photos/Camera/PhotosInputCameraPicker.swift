@@ -58,7 +58,6 @@ final class PhotosInputCameraPicker: ImagePickerDelegate {
             self.finishPickingImage(image, fromPicker: picker.controller)
         }
         if let url = mediaInfo[UIImagePickerController.InfoKey.mediaURL] as? NSURL {
-            print("Media saved at URL \(url)")
             self.finishPickingVideo(url, fromPicker: picker.controller)
         }
     }
