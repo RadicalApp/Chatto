@@ -40,6 +40,7 @@ protocol PhotosInputViewProtocol {
 
 protocol PhotosInputViewDelegate: class {
     func inputView(_ inputView: PhotosInputViewProtocol, didSelectImage image: UIImage)
+    func inputView(_ inputView: PhotosInputViewProtocol, didSelectVideo url: NSURL)
     func inputViewDidRequestCameraPermission(_ inputView: PhotosInputViewProtocol)
     func inputViewDidRequestPhotoLibraryPermission(_ inputView: PhotosInputViewProtocol)
 }
@@ -214,11 +215,15 @@ extension PhotosInputView: UICollectionViewDelegateFlowLayout {
                 self.delegate?.inputViewDidRequestCameraPermission(self)
             } else {
                 self.liveCameraPresenter.cameraPickerWillAppear()
-                self.cameraPicker.presentCameraPicker(onImageTaken: { [weak self] (image) in
+                self.cameraPicker.presentCameraPicker(onImageTaken: { [weak self](image) in
                     guard let sSelf = self else { return }
-
                     if let image = image {
                         sSelf.delegate?.inputView(sSelf, didSelectImage: image)
+                    }
+                }, onVideoTaken: { [weak self](url) in
+                    guard let sSelf = self else { return }
+                    if let url = url {
+                        sSelf.delegate?.inputView(sSelf, didSelectVideo: url)
                     }
                 }, onCameraPickerDismissed: { [weak self] in
                     self?.liveCameraPresenter.cameraPickerDidDisappear()

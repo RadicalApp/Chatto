@@ -28,6 +28,7 @@ open class PhotosChatInputItem: ChatInputItemProtocol {
     typealias Class = PhotosChatInputItem
 
     public var photoInputHandler: ((UIImage) -> Void)?
+    public var videoInputHandler: ((NSURL) -> Void)?
     public var cameraPermissionHandler: (() -> Void)?
     public var photosPermissionHandler: (() -> Void)?
     public weak var presentingController: UIViewController?
@@ -93,6 +94,9 @@ open class PhotosChatInputItem: ChatInputItemProtocol {
         if let image = input as? UIImage {
             self.photoInputHandler?(image)
         }
+        if let videoURL = input as? NSURL {
+            self.videoInputHandler?(videoURL)
+        }
     }
 }
 
@@ -100,6 +104,10 @@ open class PhotosChatInputItem: ChatInputItemProtocol {
 extension PhotosChatInputItem: PhotosInputViewDelegate {
     func inputView(_ inputView: PhotosInputViewProtocol, didSelectImage image: UIImage) {
         self.photoInputHandler?(image)
+    }
+    
+    func inputView(_ inputView: PhotosInputViewProtocol, didSelectVideo url: NSURL) {
+        self.videoInputHandler?(url)
     }
 
     func inputViewDidRequestCameraPermission(_ inputView: PhotosInputViewProtocol) {

@@ -27,27 +27,40 @@ import UIKit
 final class PhotosInputCameraPicker: ImagePickerDelegate {
     private weak var presentingController: UIViewController?
     private var imagePicker: ImagePicker?
-    private var completionBlocks: (onImageTaken: (UIImage?) -> Void, onCameraPickerDismissed: () -> Void)?
+    private var completionBlocks: (
+                                    onImageTaken: (UIImage?) -> Void,
+                                    onVideoTaken: (NSURL?) -> Void,
+                                    onCameraPickerDismissed: () -> Void)?
 
     init(presentingController: UIViewController?) {
         self.presentingController = presentingController
     }
 
-    func presentCameraPicker(onImageTaken: @escaping (UIImage?) -> Void, onCameraPickerDismissed: @escaping () -> Void) {
+    func presentCameraPicker(onImageTaken: @escaping (UIImage?) -> Void,
+                             onVideoTaken: @escaping (NSURL?) -> Void,
+                             onCameraPickerDismissed: @escaping () -> Void) {
         guard let presentingController = self.presentingController,
             let imagePicker = ImagePickerStore.factory.makeImagePicker(delegate: self) else {
                 onImageTaken(nil)
+                onVideoTaken(nil)
                 onCameraPickerDismissed()
                 return
         }
-        self.completionBlocks = (onImageTaken: onImageTaken, onCameraPickerDismissed: onCameraPickerDismissed)
+        self.completionBlocks = (onImageTaken: onImageTaken,
+                                 onVideoTaken: onVideoTaken,
+                                 onCameraPickerDismissed: onCameraPickerDismissed)
         self.imagePicker = imagePicker
         presentingController.present(imagePicker.controller, animated: true, completion: nil)
     }
 
     func imagePickerDidFinish(_ picker: ImagePicker, mediaInfo: [UIImagePickerController.InfoKey: Any]) {
-        let image = mediaInfo[UIImagePickerController.InfoKey.originalImage] as? UIImage
-        self.finishPickingImage(image, fromPicker: picker.controller)
+        if let image = mediaInfo[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            self.finishPickingImage(image, fromPicker: picker.controller)
+        }
+        if let url = mediaInfo[UIImagePickerController.InfoKey.mediaURL] as? NSURL {
+            print("Media saved at URL \(url)")
+            self.finishPickingVideo(url, fromPicker: picker.controller)
+        }
     }
 
     func imagePickerDidCancel(_ picker: ImagePicker) {
@@ -57,6 +70,13 @@ final class PhotosInputCameraPicker: ImagePickerDelegate {
     private func finishPickingImage(_ image: UIImage?, fromPicker picker: UIViewController) {
         picker.dismiss(animated: true, completion: self.completionBlocks?.onCameraPickerDismissed)
         self.completionBlocks?.onImageTaken(image)
+        self.completionBlocks = nil
+        self.imagePicker = nil
+    }
+    
+    private func finishPickingVideo(_ url: NSURL?, fromPicker picker: UIViewController) {
+        picker.dismiss(animated: true, completion: self.completionBlocks?.onCameraPickerDismissed)
+        self.completionBlocks?.onVideoTaken(url)
         self.completionBlocks = nil
         self.imagePicker = nil
     }

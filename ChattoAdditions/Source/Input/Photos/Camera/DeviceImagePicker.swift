@@ -21,6 +21,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 */
+import MobileCoreServices
+import AVFoundation
 
 final class DeviceImagePicker: NSObject, ImagePicker, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     let controller: UIViewController
@@ -33,6 +35,10 @@ final class DeviceImagePicker: NSObject, ImagePicker, UIImagePickerControllerDel
         super.init()
         pickerController.delegate = self
         pickerController.sourceType = .camera
+        pickerController.mediaTypes = [kUTTypeMovie as String, kUTTypeVideo as String, kUTTypeImage as String]
+        pickerController.videoMaximumDuration = TimeInterval(exactly: 10)!
+        pickerController.allowsEditing = false
+        pickerController.videoQuality = .typeHigh
     }
 
     @objc
