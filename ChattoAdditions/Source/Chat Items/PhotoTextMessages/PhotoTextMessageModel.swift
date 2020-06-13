@@ -19,11 +19,17 @@ open class PhotoTextMessageModel<MessageModelT: MessageModelProtocol>: PhotoText
     public var image: UIImage
     public let imageSize: CGSize
     public var imageURL: String?
-    public init(messageModel: MessageModelT, text: String, imageSize: CGSize, image: UIImage, imageURL: String?) {
+    public var thumbnail: UIImage
+    public var thumbnailURL: String?
+    
+    
+    public init(messageModel: MessageModelT, text: String, imageSize: CGSize, image: UIImage, imageURL: String?, thumbnailURL: String?) {
         self._messageModel = messageModel
         self.text = text
         self.imageSize = imageSize
         self.image = image
         self.imageURL = imageURL
+        self.thumbnail = image
+        self.thumbnailURL = thumbnailURL
     }
 }
