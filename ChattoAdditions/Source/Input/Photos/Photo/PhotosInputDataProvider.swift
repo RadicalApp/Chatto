@@ -280,11 +280,6 @@ public extension UIImage {
         }
         
         delay = delayObject as! Double
-        
-        if delay < 0.1 {
-            delay = 0.1
-        }
-        
         return delay
     }
     
