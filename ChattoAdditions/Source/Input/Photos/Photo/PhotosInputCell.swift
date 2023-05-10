@@ -71,6 +71,11 @@ final class PhotosInputCell: UICollectionViewCell {
         }
         set {
             self.imageView.image = newValue
+            if (newValue != nil) {
+                self.imageView.startAnimating()
+            } else {
+                self.imageView.stopAnimating()
+            }
         }
     }
 
