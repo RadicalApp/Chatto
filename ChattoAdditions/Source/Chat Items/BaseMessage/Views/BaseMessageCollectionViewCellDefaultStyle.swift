@@ -80,7 +80,7 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
                 self.color = color
         }
     }
-
+    
     public struct AvatarStyle {
         let size: CGSize
         let alignment: VerticalAlignment
@@ -90,6 +90,15 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
         }
     }
 
+    public struct ReactionsStyle {
+        let size: CGSize
+        let alignment: VerticalAlignment
+        public init(size: CGSize = .zero, alignment: VerticalAlignment = .bottom) {
+            self.size = size
+            self.alignment = alignment
+        }
+    }
+    
     public struct SelectionIndicatorStyle {
         let margins: UIEdgeInsets
         let selectedIcon: () -> UIImage
@@ -109,6 +118,7 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
     let layoutConstants: BaseMessageCollectionViewCellLayoutConstants
     let dateTextStyle: DateTextStyle
     let avatarStyle: AvatarStyle
+    let reactionsStyle: ReactionsStyle
     let selectionIndicatorStyle: SelectionIndicatorStyle
 
     public init(
@@ -118,6 +128,7 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
         layoutConstants: BaseMessageCollectionViewCellLayoutConstants = BaseMessageCollectionViewCellDefaultStyle.createDefaultLayoutConstants(),
         dateTextStyle: DateTextStyle = BaseMessageCollectionViewCellDefaultStyle.createDefaultDateTextStyle(),
         avatarStyle: AvatarStyle = AvatarStyle(),
+        reactionsStyle: ReactionsStyle = ReactionsStyle(),
         selectionIndicatorStyle: SelectionIndicatorStyle = BaseMessageCollectionViewCellDefaultStyle.createDefaultSelectionIndicatorStyle()) {
             self.colors = colors
             self.bubbleBorderImages = bubbleBorderImages
@@ -125,6 +136,7 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
             self.layoutConstants = layoutConstants
             self.dateTextStyle = dateTextStyle
             self.avatarStyle = avatarStyle
+            self.reactionsStyle = reactionsStyle
             self.selectionIndicatorStyle = selectionIndicatorStyle
 
             self.dateStringAttributes = [
@@ -162,7 +174,7 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
             return self.borderOutgoingNoTail
         }
     }
-
+    
     open func avatarSize(viewModel: MessageViewModelProtocol) -> CGSize {
         return self.avatarStyle.size
     }
@@ -171,6 +183,12 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
         return self.avatarStyle.alignment
     }
 
+    open func reactionsSize(viewModel: any MessageViewModelProtocol) -> CGSize {
+   //     return self.reactionsStyle.size
+        return CGSize(width: 30, height: 30)
+    }
+    
+    
     public var selectionIndicatorMargins: UIEdgeInsets {
         return self.selectionIndicatorStyle.margins
     }

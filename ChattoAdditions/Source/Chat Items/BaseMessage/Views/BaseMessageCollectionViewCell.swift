@@ -132,6 +132,8 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
 
     public private(set) var bubbleView: BubbleViewType!
     open func createBubbleView() -> BubbleViewType! {
+        print("BaseMessageCollectionViewCell createBubbleView")
+
         assert(false, "Override in subclass")
         return nil
     }
@@ -143,6 +145,15 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         return avatarImageView
     }
 
+    public private(set) var reactionsView: UIView!
+    func createReactionsView() -> UIView {
+        print("BaseMessageCollectionViewCell createReactionsView")
+
+        let reactionsContentView = UIView(frame: CGRectMake(self.bubbleView.frame.origin.x, self.bubbleView.frame.origin.y, self.bubbleView.frame.size.width, 30))
+        reactionsContentView.isUserInteractionEnabled = true
+        return reactionsContentView
+    }
+        
     public override init(frame: CGRect) {
         super.init(frame: frame)
         self.commonInit()
@@ -170,19 +181,25 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     }()
 
     private func commonInit() {
+        print("BaseMessageCollectionViewCell commonInit")
+
         self.avatarView = self.createAvatarView()
         self.avatarView.addGestureRecognizer(self.avatarTapGestureRecognizer)
         self.bubbleView = self.createBubbleView()
         self.bubbleView.isExclusiveTouch = true
         self.bubbleView.addGestureRecognizer(self.tapGestureRecognizer)
         self.bubbleView.addGestureRecognizer(self.longPressGestureRecognizer)
+        self.reactionsView = self.createReactionsView()
         self.contentView.addSubview(self.avatarView)
         self.contentView.addSubview(self.bubbleView)
         self.contentView.addSubview(self.failedButton)
         self.contentView.addSubview(self.selectionIndicator)
+        self.contentView.addSubview(self.reactionsView)
         self.contentView.isExclusiveTouch = true
         self.isExclusiveTouch = true
-
+        
+        self.contentView.bringSubviewToFront(self.reactionsView)
+        
         let selectionTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleSelectionTap(_:)))
         self.selectionTapGestureRecognizer = selectionTapGestureRecognizer
         self.addGestureRecognizer(selectionTapGestureRecognizer)
@@ -224,6 +241,7 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         self.accessoryTimestampView.attributedText = style.attributedStringForDate(viewModel.date)
         self.updateAvatarView(from: viewModel, with: style)
         self.updateSelectionIndicator(with: style)
+        self.updateReactionsView(from: viewModel, with: style)
 
         self.contentView.isUserInteractionEnabled = !viewModel.decorationAttributes.isShowingSelectionIndicator
         self.selectionTapGestureRecognizer?.isEnabled = viewModel.decorationAttributes.isShowingSelectionIndicator
@@ -234,6 +252,7 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
 
     private func updateAvatarView(from viewModel: MessageViewModelProtocol,
                                   with style: BaseMessageCollectionViewCellStyleProtocol) {
+        print("BaseMessageCollectionViewCell updateAvatarView")
         self.avatarView.isHidden = !viewModel.decorationAttributes.isShowingAvatar
         
         let avatarImageSize = _avatarSize(viewModel, style: style)
@@ -246,6 +265,16 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         return viewModel.decorationAttributes.isShowingAvatar ? style.avatarSize(viewModel: viewModel) : CGSize.zero
     }
 
+    private func updateReactionsView(from viewModel: MessageViewModelProtocol,
+                                    with style: BaseMessageCollectionViewCellStyleProtocol) {
+        print("BaseMessageCollectionViewCell updateReactionsView \(viewModel.decorationAttributes.isShowingReactions) \(String(describing: self.reactionsView))")
+        self.reactionsView.isHidden = !viewModel.decorationAttributes.isShowingReactions
+    }
+       
+    open func refreshReactions() {
+        print("BaseMessageCollectionViewCell refreshReactions")
+    }
+        
     // MARK: layout
     open override func layoutSubviews() {
         super.layoutSubviews()
@@ -259,6 +288,11 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         self.avatarView.bma_rect = layout.avatarViewFrame
         self.avatarView.layer.cornerRadius = self.avatarView.frame.size.width / 2
         self.avatarView.clipsToBounds = true
+        self.avatarView.layoutIfNeeded()
+        
+        self.reactionsView.bma_rect = layout.reactionsViewFrame
+        self.reactionsView.clipsToBounds = false
+        self.reactionsView.layoutIfNeeded()
         
         self.selectionIndicator.bma_rect = layout.selectionIndicatorFrame
 
@@ -298,8 +332,7 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
             avatarVerticalAlignment: self.baseStyle.avatarVerticalAlignment(viewModel: self.messageViewModel),
             isShowingSelectionIndicator: self.messageViewModel.decorationAttributes.isShowingSelectionIndicator,
             selectionIndicatorSize: self.baseStyle.selectionIndicatorIcon(for: self.messageViewModel).size,
-            selectionIndicatorMargins: self.baseStyle.selectionIndicatorMargins
-        )
+            selectionIndicatorMargins: self.baseStyle.selectionIndicatorMargins, isShowingReactions: self.messageViewModel.decorationAttributes.isShowingReactions)
         var layoutModel = Layout()
         layoutModel.calculateLayout(parameters: parameters)
         return layoutModel
@@ -421,6 +454,7 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     public var onDeleteTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
     public var onHideTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
     public var onWhereIsMyMessageTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
+
     @objc
     func deleteMessage() {
         self.onDeleteTapped?(self)
@@ -433,13 +467,14 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     func showWhereIsMyMessage() {
         self.onWhereIsMyMessageTapped?(self)
     }
-    
+    @objc
+        
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         var allowedSelector: Selector
         
         if self.messageViewModel.isHidden || self.messageViewModel.isDeleted {
             allowedSelector = UIResponderCustomEditActions.whereIsMyMessage
-        }else if self.messageViewModel.isIncoming {
+        } else if self.messageViewModel.isIncoming {
             allowedSelector = UIResponderCustomEditActions.hide
         } else {
             allowedSelector = UIResponderCustomEditActions.delete
@@ -475,8 +510,10 @@ private struct Layout {
     private (set) var failedButtonFrame = CGRect.zero
     private (set) var bubbleViewFrame = CGRect.zero
     private (set) var avatarViewFrame = CGRect.zero
+    private (set) var reactionsViewFrame = CGRect.zero
     private (set) var selectionIndicatorFrame = CGRect.zero
     private (set) var preferredMaxWidthForBubble: CGFloat = 0
+    private (set) var bottomPaddingForReactions: CGFloat = 20
 
     mutating func calculateLayout(parameters: LayoutParameters) {
         let containerWidth = parameters.containerWidth
@@ -488,17 +525,28 @@ private struct Layout {
         let horizontalInterspacing = parameters.horizontalInterspacing
         let avatarSize = parameters.avatarSize
         let selectionIndicatorSize = parameters.selectionIndicatorSize
-
+        
         let preferredWidthForBubble = (containerWidth * parameters.maxContainerWidthPercentageForBubbleView).bma_round()
         let bubbleSize = bubbleView.sizeThatFits(CGSize(width: preferredWidthForBubble, height: .greatestFiniteMagnitude))
-        let containerRect = CGRect(origin: CGPoint.zero, size: CGSize(width: containerWidth, height: bubbleSize.height))
-
+     
+        var containerRect = CGRect(origin: CGPoint.zero, size: CGSize(width: containerWidth, height: bubbleSize.height))
+        
+        if parameters.isShowingReactions {
+            containerRect = CGRect(origin: CGPoint(x: 0, y: -10), size: CGSize(width: containerWidth, height: bubbleSize.height+bottomPaddingForReactions))
+        }
+                
         self.bubbleViewFrame = bubbleSize.bma_rect(
             inContainer: containerRect,
             xAlignament: .center,
             yAlignment: .center
         )
 
+        self.reactionsViewFrame = bubbleSize.bma_rect(
+            inContainer: containerRect,
+            xAlignament: .center,
+            yAlignment: .center
+        )
+        
         self.failedButtonFrame = failedButtonSize.bma_rect(
             inContainer: containerRect,
             xAlignament: .center,
@@ -510,7 +558,7 @@ private struct Layout {
             xAlignament: .center,
             yAlignment: parameters.avatarVerticalAlignment
         )
-
+        
         self.selectionIndicatorFrame = selectionIndicatorSize.bma_rect(
             inContainer: containerRect,
             xAlignament: .left,
@@ -543,6 +591,7 @@ private struct Layout {
                 currentX += horizontalInterspacing
             }
             self.bubbleViewFrame.origin.x = currentX
+            self.reactionsViewFrame.origin.x = currentX
         } else {
             currentX = containerRect.maxX - horizontalMargin
             currentX -= avatarSize.width
@@ -558,7 +607,10 @@ private struct Layout {
             }
             currentX -= bubbleSize.width
             self.bubbleViewFrame.origin.x = currentX
+            self.reactionsViewFrame.origin.x = currentX
         }
+        
+        self.reactionsViewFrame.origin.y = self.bubbleViewFrame.size.height - 10
 
         self.size = containerRect.size
         self.preferredMaxWidthForBubble = preferredWidthForBubble
@@ -579,4 +631,5 @@ private struct LayoutParameters {
     let isShowingSelectionIndicator: Bool
     let selectionIndicatorSize: CGSize
     let selectionIndicatorMargins: UIEdgeInsets
+    let isShowingReactions: Bool
 }

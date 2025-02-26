@@ -30,17 +30,20 @@ public struct BaseMessageDecorationAttributes {
     public let isShowingTail: Bool
     public let isShowingAvatar: Bool
     public let isShowingSelectionIndicator: Bool
+    public let isShowingReactions: Bool
     public let isSelected: Bool
 
     public init(canShowFailedIcon: Bool = true,
                 isShowingTail: Bool = false,
                 isShowingAvatar: Bool = false,
                 isShowingSelectionIndicator: Bool = false,
+                isShowingReactions: Bool = false,
                 isSelected: Bool = false) {
         self.canShowFailedIcon = canShowFailedIcon
         self.isShowingTail = isShowingTail
         self.isShowingAvatar = isShowingAvatar
         self.isShowingSelectionIndicator = isShowingSelectionIndicator
+        self.isShowingReactions = isShowingReactions
         self.isSelected = isSelected
     }
 }
@@ -60,6 +63,7 @@ public struct ChatItemDecorationAttributes: ChatItemDecorationAttributesProtocol
                 canShowTail: Bool,
                 canShowAvatar: Bool,
                 canShowFailedIcon: Bool,
+                canShowReactions: Bool,
                 isShowingSelectionIndicator: Bool = false,
                 isSelected: Bool = false) {
         let messageDecorationAttributes = BaseMessageDecorationAttributes(
@@ -67,6 +71,7 @@ public struct ChatItemDecorationAttributes: ChatItemDecorationAttributesProtocol
             isShowingTail: canShowTail,
             isShowingAvatar: canShowAvatar,
             isShowingSelectionIndicator: isShowingSelectionIndicator,
+            isShowingReactions: canShowReactions,
             isSelected: isSelected
         )
         self.init(bottomMargin: bottomMargin, messageDecorationAttributes: messageDecorationAttributes)

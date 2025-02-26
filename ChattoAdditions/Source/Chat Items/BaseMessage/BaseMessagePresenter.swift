@@ -218,6 +218,7 @@ open class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHandl
     }
 
     open func onCellBubbleLongPressBegan() {
+        UIImpactFeedbackGenerator.init(style: .heavy).impactOccurred()
         self.interactionHandler?.userDidBeginLongPressOnBubble(viewModel: self.messageViewModel)
     }
 
